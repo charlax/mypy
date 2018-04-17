@@ -1798,3 +1798,18 @@ x = 10
 x = '10'
 [out]
 ==
+
+[case testImportedMissingSubpackage]
+# flags: --follow-imports=skip --ignore-missing-imports --verbose
+# cmd: mypy a.py b/__init__.py
+[file a.py]
+#from b.foo import bar
+import b.foo
+x = 10
+[file b/__init__.py]
+[file a.py.2]
+#from b.foo import bar
+import b.foo
+x = '10'
+[out]
+==
