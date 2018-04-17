@@ -57,6 +57,7 @@ from mypy.nodes import (
     IntExpr, FloatExpr, UnicodeExpr, EllipsisExpr, TempNode, EnumCallExpr, ImportedName,
     COVARIANT, CONTRAVARIANT, INVARIANT, UNBOUND_IMPORTED, LITERAL_YES, ARG_OPT, nongen_builtins,
     collections_type_aliases, get_member_expr_fullname,
+    UnloadedMypyFile,
 )
 from mypy.literals import literal
 from mypy.tvar_scope import TypeVarScope
@@ -1294,7 +1295,8 @@ class SemanticAnalyzerPass2(NodeVisitor[None],
         while '.' in id:
             parent, child = id.rsplit('.', 1)
             parent_mod = self.modules.get(parent)
-            if parent_mod and child not in parent_mod.names:
+            if (parent_mod and not isinstance(parent_mod, UnloadedMypyFile)
+                    and child not in parent_mod.names):
                 child_mod = self.modules.get(id)
                 if child_mod:
                     sym = SymbolTableNode(MODULE_REF, child_mod,
